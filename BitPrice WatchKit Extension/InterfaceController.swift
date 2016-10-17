@@ -24,6 +24,21 @@ class InterfaceController: WKInterfaceController {
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
+        
+        if let price = UserDefaults.standard.value(forKey: "price") as? NSNumber {
+            // We have a previous price
+            updatingLabel.setText("Updating...")
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .currency
+            formatter.locale = Locale(identifier: "en_US")
+            
+            self.priceLabel.setText(formatter.string(from: price))
+        } else {
+            priceLabel.setText("Getting Price...")
+            updatingLabel.setText("")
+        }
+        
+        getPrice()
     }
     
     override func didDeactivate() {
