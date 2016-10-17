@@ -43,13 +43,31 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
                         
                         let intPrice = Int(price)
                         
-                        let template = CLKComplicationTemplateModularSmallStackText()
-                        template.line1TextProvider = CLKSimpleTextProvider(text: "BIT")
-                        template.line2TextProvider = CLKSimpleTextProvider(text: "\(intPrice)")
+                        if complication.family == .modularSmall {
                         
-                        let entry = CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template)
+                            let template = CLKComplicationTemplateModularSmallStackText()
+                            template.line1TextProvider = CLKSimpleTextProvider(text: "BIT")
+                            template.line2TextProvider = CLKSimpleTextProvider(text: "\(intPrice)")
                         
-                        handler(entry)
+                            let entry = CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template)
+                        
+                            handler(entry)
+                        }
+                        
+                        if complication.family == .modularLarge {
+                            let template = CLKComplicationTemplateModularLargeStandardBody()
+                            template.headerTextProvider = CLKSimpleTextProvider(text: "BitPrice")
+                            
+                            let formatter = NumberFormatter()
+                            formatter.numberStyle = .currency
+                            formatter.locale = Locale(identifier: "en_US")
+                            
+                            template.body1TextProvider = CLKSimpleTextProvider(text: formatter.string(from: price)!)
+                            
+                            let entry = CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template)
+                            
+                            handler(entry)
+                        }
                         
                     } catch {}
                 }
@@ -66,12 +84,19 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     
     func getLocalizableSampleTemplate(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTemplate?) -> Void) {
         // This method will be called once per supported complication, and the results will be cached
-        
-        let template = CLKComplicationTemplateModularSmallStackText()
-        template.line1TextProvider = CLKSimpleTextProvider(text: "BIT")
-        template.line2TextProvider = CLKSimpleTextProvider(text: "$$$")
-        
-        handler(template)
+        if complication.family == .modularSmall {
+            
+            let template = CLKComplicationTemplateModularSmallStackText()
+            template.line1TextProvider = CLKSimpleTextProvider(text: "BIT")
+            template.line2TextProvider = CLKSimpleTextProvider(text: "$$$")
+            handler(template)
+        }
+        if complication.family == .modularLarge {
+            let template = CLKComplicationTemplateModularLargeStandardBody()
+            template.headerTextProvider = CLKSimpleTextProvider(text: "BitPrice")
+            template.body1TextProvider = CLKSimpleTextProvider(text: "$1,456.78")
+            handler(template)
+        }
     }
     
 }

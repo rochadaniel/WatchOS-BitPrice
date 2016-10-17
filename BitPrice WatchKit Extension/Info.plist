@@ -25,6 +25,7 @@
 	<key>CLKComplicationSupportedFamilies</key>
 	<array>
 		<string>CLKComplicationFamilyModularSmall</string>
+		<string>CLKComplicationFamilyModularLarge</string>
 	</array>
 	<key>NSExtension</key>
 	<dict>
