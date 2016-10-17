@@ -30,5 +30,40 @@ class InterfaceController: WKInterfaceController {
         // This method is called when watch view controller is no longer visible
         super.didDeactivate()
     }
+    
+    func getPrice() {
+        
+        let url = URL(string: "https://api.coindesk.com/v1/bpi/currentprice.json")!
+        
+        URLSession.shared.dataTask(with: url) { (data: Data?, response:URLResponse?, error:Error?) in
+            if error == nil {
+                print("Sucesso")
+                
+                if data != nil {
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data!, options: []) as! [String:Any]
+                        
+                        guard let bpi = json["bpi"] as? [String:Any], let USD = bpi["USD"] as? [String:Any], let price = USD["rate_float"] as? NSNumber else {
+                            return
+                        }
+                        
+                        let formatter = NumberFormatter()
+                        formatter.numberStyle = .currency
+                        formatter.locale = Locale(identifier: "en_US")
+                        
+                        self.priceLabel.setText(formatter.string(from: price))
+                        self.updatingLabel.setText("Updated")
+                        
+                        UserDefaults.standard.set(price, forKey: "price")
+                        UserDefaults.standard.synchronize()
+                        
+                    } catch {}
+                }
+                
+            } else {
+                print("Erro")
+            }
+        }.resume()
+    }
 
 }
